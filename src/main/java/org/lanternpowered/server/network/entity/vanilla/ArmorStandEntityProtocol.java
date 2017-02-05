@@ -23,15 +23,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.lanternpowered.server.inject;
+package org.lanternpowered.server.network.entity.vanilla;
 
-public interface InjectorFactory {
+import org.lanternpowered.server.entity.LanternEntity;
+import org.lanternpowered.server.network.entity.parameter.ParameterList;
 
-    /**
-     * Creates a injector for the specified module.
-     * 
-     * @param module the module that should be used
-     * @return the injector
-     */
-    Injector create(Module module);
+public class ArmorStandEntityProtocol<E extends LanternEntity> extends CreatureEntityProtocol<E> {
+
+    public ArmorStandEntityProtocol(E entity) {
+        super(entity);
+    }
+
+    @Override
+    protected int getMobType() {
+        return 30;
+    }
+
+    @Override
+    protected void spawn(ParameterList parameterList) {
+        super.spawn(parameterList);
+    }
+
+    @Override
+    protected void update(ParameterList parameterList) {
+        super.update(parameterList);
+    }
 }
