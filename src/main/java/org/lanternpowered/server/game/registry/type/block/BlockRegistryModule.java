@@ -74,10 +74,14 @@ import org.lanternpowered.server.block.translation.SpongeTranslationProvider;
 import org.lanternpowered.server.data.key.LanternKeys;
 import org.lanternpowered.server.data.property.LanternPropertyRegistry;
 import org.lanternpowered.server.data.type.LanternBedPart;
+import org.lanternpowered.server.data.type.LanternBigMushroomType;
+import org.lanternpowered.server.data.type.LanternBrickType;
 import org.lanternpowered.server.data.type.LanternDirtType;
+import org.lanternpowered.server.data.type.LanternDisguisedBlockType;
 import org.lanternpowered.server.data.type.LanternDyeColor;
 import org.lanternpowered.server.data.type.LanternPlantType;
 import org.lanternpowered.server.data.type.LanternPortionType;
+import org.lanternpowered.server.data.type.LanternPrismarineType;
 import org.lanternpowered.server.data.type.LanternQuartzType;
 import org.lanternpowered.server.data.type.LanternRailDirection;
 import org.lanternpowered.server.data.type.LanternSandType;
@@ -862,16 +866,87 @@ public final class BlockRegistryModule extends AdditionalPluginCatalogRegistryMo
                         .translation("tile.chest.name")
                         .build("minecraft", "chest"),
                 this::chestData);
+        ///////////////////////
+        ///   Diamond Ore   ///
+        ///////////////////////
+        register(56, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(3.0))
+                                .add(blastResistance(15.0)))
+                        .translation("tile.oreDiamond.name")
+                        .build("minecraft", "diamond_ore"));
+        /////////////////////////
+        ///   Diamond Block   ///
+        /////////////////////////
+        register(57, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(5.0))
+                                .add(blastResistance(30.0)))
+                        .translation("tile.blockDiamond.name")
+                        .build("minecraft", "diamond_block"));
+        ////////////////
+        ///   Ice   ///
+        ///////////////
+        register(79, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.5))
+                                .add(blastResistance(2.5)))
+                        .translation("tile.ice.name")
+                        .build("minecraft", "ice"));
+        /////////////////
+        ///   Snow   ///
+        ////////////////
+        register(80, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.2))
+                                .add(blastResistance(1.0)))
+                        .translation("tile.snow.name")
+                        .build("minecraft", "snow"));
+        /////////////////
+        ///   Clay   ///
+        ////////////////
+        register(82, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.6))
+                                .add(blastResistance(3.0)))
+                        .translation("tile.clay.name")
+                        .build("minecraft", "clay"));
         ////////////////////
         ///    Pumpkin   ///
         ////////////////////
         register(86, pumpkinBuilder()
                         .itemType(builder -> builder
-                                .properties(properties -> properties
+                            .properties(properties -> properties
                                         .add(equipmentType(EquipmentTypes.HEADWEAR))))
                         .translation("tile.pumpkin.name")
                         .build("minecraft", "pumpkin"),
                 this::pumpkinData);
+        /////////////////////
+        ///   Netherrack  ///
+        /////////////////////
+        register(87, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.4))
+                                .add(blastResistance(2.0)))
+                        .translation("tile.hellrock.name")
+                        .build("minecraft", "netherrack"));
+        /////////////////////
+        ///   Glowstone   ///
+        /////////////////////
+        register(89, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.3))
+                                .add(blastResistance(1.5))
+                                .add(lightEmission(15)))
+                        .translation("tile.lightgem.name")
+                        .build("minecraft", "glowstone"));
         ////////////////////
         ///  Lit Pumpkin ///
         ////////////////////
@@ -890,6 +965,59 @@ public final class BlockRegistryModule extends AdditionalPluginCatalogRegistryMo
                                 .add(blastResistance(1.5)))
                         .build("minecraft", "stained_glass"),
                 this::dyedData);
+        ///////////////////////
+        ///   Monster Egg   ///
+        ///////////////////////
+        register(97, simpleBuilder()
+                        .trait(LanternEnumTraits.DISGUISED_BLOCK_TYPE)
+                        .defaultState(state -> state
+                                .withTrait(LanternEnumTraits.DISGUISED_BLOCK_TYPE, LanternDisguisedBlockType.STONE).get())
+                        .itemType(builder -> builder
+                                .keysProvider(valueContainer -> valueContainer
+                                    .registerKey(Keys.DISGUISED_BLOCK_TYPE, LanternDisguisedBlockType.STONE)
+                                )
+                        )
+                        .properties(builder -> builder
+                            .add(hardness(0.75))
+                            .add(blastResistance(3.75)))
+                        .build("minecraft", "monster_egg"),
+                blockState -> (byte) blockState.getTraitValue(LanternEnumTraits.DISGUISED_BLOCK_TYPE).get().getInternalId());
+        ////////////////////////
+        ///   Stone Bricks   ///
+        ////////////////////////
+        register(98, simpleBuilder()
+                        .trait(LanternEnumTraits.BRICK_TYPE)
+                        .defaultState(state -> state.withTrait(LanternEnumTraits.BRICK_TYPE, LanternBrickType.DEFAULT).get())
+                        .itemType(builder -> builder
+                            .keysProvider(valueContainer -> valueContainer.registerKey(Keys.BRICK_TYPE, LanternBrickType.DEFAULT)))
+                        .properties(builder -> builder
+                                .add(hardness(1.5))
+                                .add(blastResistance(30)))
+                        .translation(TranslationProvider.of(LanternEnumTraits.BRICK_TYPE))
+                        .build("minecraft", "stonebrick"),
+                blockState -> (byte) blockState.getTraitValue(LanternEnumTraits.BRICK_TYPE).get().getInternalId());
+        ////////////////////////////////
+        ///   Brown Mushroom Block   ///
+        ////////////////////////////////
+        register(99, mushroomBlockBuilder()
+                .build("minecraft", "brown_mushroom_block"),
+            this::mushroomData);
+        //////////////////////////////
+        ///   Red Mushroom Block   ///
+        //////////////////////////////
+        register(100, mushroomBlockBuilder()
+                        .build("minecraft", "red_mushroom_block"),
+            this::mushroomData);
+        ////////////////////
+        ///   End Stone  ///
+        ////////////////////
+        register(121, simpleBuilder()
+            .itemType()
+            .properties(builder -> builder
+                .add(hardness(3.0))
+                .add(blastResistance(45.0)))
+            .translation("tile.whiteStone.name")
+            .build("minecraft", "end_stone"));
         //////////////////////////
         /// Double Wooden Slab ///
         //////////////////////////
@@ -938,6 +1066,16 @@ public final class BlockRegistryModule extends AdditionalPluginCatalogRegistryMo
                     final int portion = (byte) blockState.getTraitValue(LanternEnumTraits.PORTION_TYPE).get().getInternalId();
                     return (byte) (portion << 3 | type);
                 });
+        //////////////////////
+        ///   Emerald Ore   ///
+        //////////////////////
+        register(129, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(3.0))
+                                .add(blastResistance(15.0)))
+                        .translation("tile.oreEmerald.name")
+                        .build("minecraft", "emerald_ore"));
         /////////////////////
         ///  Ender Chest  ///
         /////////////////////
@@ -957,6 +1095,16 @@ public final class BlockRegistryModule extends AdditionalPluginCatalogRegistryMo
                                 .add(new EnderChestInteractionBehavior()))
                         .build("minecraft", "ender_chest"),
                 this::chestData);
+        /////////////////////////
+        ///   Emerald Block   ///
+        /////////////////////////
+        register(133, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(5.0))
+                                .add(blastResistance(30.0)))
+                        .translation("tile.blockEmerald.name")
+                        .build("minecraft", "emerald_block"));
         /////////////////////
         /// Trapped Chest ///
         /////////////////////
@@ -1090,6 +1238,71 @@ public final class BlockRegistryModule extends AdditionalPluginCatalogRegistryMo
                                 .add(PropertyProviderCollections.UNBREAKABLE))
                         .translation("tile.barrier.name")
                         .build("minecraft", "barrier"));
+        //////////////////////
+        ///   Prismarine   ///
+        //////////////////////
+        register(168, simpleBuilder()
+                        .trait(LanternEnumTraits.PRISMARINE_TYPE)
+                        .defaultState(state -> state.withTrait(LanternEnumTraits.PRISMARINE_TYPE, LanternPrismarineType.ROUGH).get())
+                        .itemType(builder -> builder.keysProvider(valueContainer -> valueContainer
+                            .registerKey(Keys.PRISMARINE_TYPE, LanternPrismarineType.ROUGH)))
+                        .properties(builder -> builder
+                                .add(hardness(1.5))
+                                .add(blastResistance(30.0)))
+                        .translation(TranslationProvider.of(LanternEnumTraits.PRISMARINE_TYPE))
+                        .build("minecraft", "prismarine"),
+                    blockState -> (byte) blockState.getTraitValue(LanternEnumTraits.PRISMARINE_TYPE).get().getInternalId());
+        ///////////////////////
+        ///   Sea Lantern   ///
+        ///////////////////////
+        register(169, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.3))
+                                .add(blastResistance(1.5))
+                                .add(lightEmission(15)))
+                        .translation("tile.seaLantern.name")
+                        .build("minecraft", "sea_lantern"));
+        ////////////////////
+        ///   Hay Bale   ///
+        ////////////////////
+        register(170, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.5))
+                                .add(blastResistance(2.5)))
+                        .translation("tile.hayBlock.name")
+                        .build("minecraft", "hay_block"));
+        /////////////////////////
+        ///   Hardened Clay   ///
+        /////////////////////////
+        register(172, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(1.25))
+                                .add(blastResistance(30)))
+                        .translation("tile.clayHardened.name")
+                        .build("minecraft", "hardened_clay"));
+        /////////////////////////
+        ///   Block of Coal   ///
+        /////////////////////////
+        register(173, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(5.0))
+                                .add(blastResistance(30.0)))
+                        .translation("tile.blockCoal.name")
+                        .build("minecraft", "coal_block"));
+        //////////////////////
+        ///   Packed Ice  ///
+        ///////////////////
+        register(174, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.5))
+                                .add(blastResistance(2.5)))
+                        .translation("tile.icePacked.name")
+                        .build("minecraft", "packed_ice"));
         /////////////////////
         /// Red Sandstone ///
         /////////////////////
@@ -1125,6 +1338,56 @@ public final class BlockRegistryModule extends AdditionalPluginCatalogRegistryMo
                         .boundingBox(BoundingBoxes::slab)
                         .build("minecraft", "stone_slab2"),
                 blockState -> stoneSlabData(blockState, blockState.getTraitValue(LanternEnumTraits.STONE_SLAB2_TYPE).get().getInternalId() - 8));
+        //////////////////////
+        ///   Frosted Ice  ///
+        //////////////////////
+        register(212, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.5))
+                                .add(blastResistance(2.5)))
+                        .translation("tile.frostedIce.name")
+                        .build("minecraft", "frosted_ice"));
+        //////////////////////
+        ///   Magma Block  ///
+        //////////////////////
+        register(213, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(0.5))
+                                .add(blastResistance(2.5)))
+                        .translation("tile.magma.name")
+                        .build("minecraft", "magma"));
+        ////////////////////////////
+        ///   Nether Wart Block  ///
+        ////////////////////////////
+        register(214, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(1.0))
+                                .add(blastResistance(5.0)))
+                        .translation("tile.netherWartBlock.name")
+                        .build("minecraft", "nether_wart_block"));
+        ///////////////////////////
+        ///   Red Nether Brick  ///
+        ///////////////////////////
+        register(215, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(2.0))
+                                .add(blastResistance(30.0)))
+                        .translation("tile.redNetherBrick.name")
+                    .build("minecraft", "red_nether_brick"));
+        /////////////////////
+        ///   Bone Block  ///
+        /////////////////////
+        register(216, simpleBuilder()
+                        .itemType()
+                        .properties(builder -> builder
+                                .add(hardness(2.0))
+                                .add(blastResistance(30.0)))
+                        .translation("tile.boneBlock.name")
+                        .build("minecraft", "bone_block"));
         ///////////////////////////
         ///  White Shulker Box  ///
         ///////////////////////////
@@ -1303,6 +1566,22 @@ public final class BlockRegistryModule extends AdditionalPluginCatalogRegistryMo
 
     private byte pumpkinData(BlockState blockState) {
         return (byte) horizontalDirectionData(blockState.getTraitValue(LanternEnumTraits.HORIZONTAL_FACING).get());
+    }
+
+    private BlockTypeBuilder mushroomBlockBuilder() {
+        return simpleBuilder()
+                .itemType()
+                .trait(LanternEnumTraits.BIG_MUSHROOM_TYPE)
+                .defaultState(state -> state
+                        .withTrait(LanternEnumTraits.BIG_MUSHROOM_TYPE, LanternBigMushroomType.ALL_OUTSIDE).get())
+                .properties(builder -> builder
+                    .add(hardness(0.2))
+                    .add(blastResistance(1.0)))
+                .translation("tile.mushroom.name");
+    }
+
+    private byte mushroomData(BlockState blockState) {
+        return (byte) blockState.getTraitValue(LanternEnumTraits.BIG_MUSHROOM_TYPE).get().getInternalId();
     }
 
     private BlockTypeBuilder dyedBuilder(String translationKey) {
