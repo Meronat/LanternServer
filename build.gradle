@@ -15,16 +15,16 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'org.spongepowered:spongegradle:0.3.1-SNAPSHOT'
+        classpath 'org.spongepowered:spongegradle:0.8.1-SNAPSHOT'
         classpath 'org.lanternpowered:lanterngradle:1.0.0'
-        classpath 'org.apache.logging.log4j:log4j-core:2.5'
+        classpath 'org.apache.logging.log4j:log4j-core:2.8.1'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0'
     }
 }
 
 plugins {
     id "com.github.hierynomus.license" version "0.13.1"
-    id "com.github.johnrengelman.shadow" version "1.2.3"
+    id "com.github.johnrengelman.shadow" version "1.2.4"
 }
 
 // Environment variables for the build set by the build server
@@ -110,38 +110,38 @@ dependencies {
     compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
 
     // Useful libraries
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'com.google.guava:guava:18.0'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'com.google.guava:guava:21.0'
 
     // Injection
     compile 'com.google.inject:guice:4.1.0'
 
     // Json library
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.google.code.gson:gson:2.8.0'
 
     // Network
-    compile 'io.netty:netty-all:4.1.1.Final'
+    compile 'io.netty:netty-all:4.1.9.Final'
 
     // Logging
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.5'
-    compile 'org.apache.logging.log4j:log4j-core:2.5'
-    compile 'org.apache.logging.log4j:log4j-api:2.5'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.8.1'
+    compile 'org.apache.logging.log4j:log4j-core:2.8.1'
+    compile 'org.apache.logging.log4j:log4j-api:2.8.1'
 
     // Console
-    compile 'org.fusesource.jansi:jansi:1.12'
-    compile 'jline:jline:2.14.2'
+    compile 'org.fusesource.jansi:jansi:1.15'
+    compile 'jline:jline:2.14.3'
 
     // Fastutil
-    fastutil 'it.unimi.dsi:fastutil:7.0.12'
+    fastutil 'it.unimi.dsi:fastutil:7.1.0'
 
     // Database connectors
-    compile 'com.zaxxer:HikariCP:2.4.7'
-    compile 'org.mariadb.jdbc:mariadb-java-client:1.4.6'
-    compile 'org.xerial:sqlite-jdbc:3.8.11.2'
-    compile 'com.h2database:h2:1.4.192'
+    compile 'com.zaxxer:HikariCP:2.6.1'
+    compile 'org.mariadb.jdbc:mariadb-java-client:1.5.9'
+    compile 'org.xerial:sqlite-jdbc:3.16.1'
+    compile 'com.h2database:h2:1.4.194'
 
     // Scripting
-    compile 'org.codehaus.groovy:groovy-all:2.4.7'
+    compile 'org.codehaus.groovy:groovy-all:2.4.10'
 
     // Asm
     compile 'org.ow2.asm:asm-all:5.0.3'
@@ -291,6 +291,7 @@ shadowJar {
         include dependency('org.apache.logging.log4j:log4j-api')
         include dependency('org.fusesource.jansi:jansi')
         include dependency('jline:jline')
+        include dependency('net.sf.jopt-simple:jopt-simple')
 
         // Guice
         include dependency('com.google.inject:guice')
