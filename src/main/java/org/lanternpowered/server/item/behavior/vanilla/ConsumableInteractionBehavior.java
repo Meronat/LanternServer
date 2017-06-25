@@ -109,8 +109,10 @@ public class ConsumableInteractionBehavior implements InteractWithItemBehavior, 
             final ItemStack itemStack = context.tryGet(Parameters.USED_ITEM_STACK);
 
             final FoodRestorationProperty foodRestorationProperty = itemStack.getProperty(FoodRestorationProperty.class).orElse(null);
+            int foodLevelForSaturation = 1;
             //noinspection ConstantConditions
             if (foodRestorationProperty != null && foodRestorationProperty.getValue() != 0.0) {
+                foodLevelForSaturation = foodRestorationProperty.getValue();
                 final Optional<Integer> maxFood = player.get(LanternKeys.MAX_FOOD_LEVEL);
                 final Optional<Integer> optFoodLevel = player.get(Keys.FOOD_LEVEL);
                 if (optFoodLevel.isPresent()) {
@@ -133,7 +135,7 @@ public class ConsumableInteractionBehavior implements InteractWithItemBehavior, 
                 final Optional<Double> maxSaturation = player.get(LanternKeys.MAX_SATURATION);
                 final Optional<Double> optSaturation = player.get(Keys.SATURATION);
                 if (optSaturation.isPresent()) {
-                    player.offer(Keys.SATURATION, Math.min(optSaturation.get() + saturationProperty.getValue(),
+                    player.offer(Keys.SATURATION, Math.min(optSaturation.get() + saturationProperty.getValue() * foodLevelForSaturation * 2,
                             maxSaturation.orElse(Double.MAX_VALUE)));
                 }
             }

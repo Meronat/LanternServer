@@ -31,7 +31,6 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableList;
 import org.lanternpowered.server.data.key.LanternKeys;
 import org.lanternpowered.server.effect.potion.LanternPotionEffectType;
-import org.lanternpowered.server.world.rules.Rule;
 import org.lanternpowered.server.world.rules.RuleTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
@@ -44,7 +43,6 @@ import org.spongepowered.api.event.cause.entity.damage.source.DamageSources;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
-import org.spongepowered.api.world.gamerule.DefaultGameRules;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +53,7 @@ public class LanternLiving extends LanternEntity implements Living {
 
     private Vector3d headRotation = Vector3d.ZERO;
     private long lastFoodTime = System.currentTimeMillis();
+    private long lastPeacefulFoodTime = System.currentTimeMillis();
 
     public LanternLiving(UUID uniqueId) {
         super(uniqueId);
@@ -130,8 +129,8 @@ public class LanternLiving extends LanternEntity implements Living {
                     offer(Keys.INVISIBLE, duration > 0);
                 }
                 if (potionEffect.getType() == PotionEffectTypes.HUNGER && supports(Keys.EXHAUSTION)) {
-                    offer(Keys.EXHAUSTION, Math.min(get(Keys.EXHAUSTION).get() + (0.005 * (potionEffect.getAmplifier() + 1)),
-                            getValue(Keys.EXHAUSTION).get().getMaxValue()));
+                    offer(Keys.EXHAUSTION, Math.min(get(Keys.EXHAUSTION).orElse(0.0) + (0.005 * (potionEffect.getAmplifier() + 1)),
+                            get(LanternKeys.MAX_EXHAUSTION).orElse(Double.MAX_VALUE)));
                 }
             }
             offer(Keys.POTION_EFFECTS, newPotionEffects.build());
@@ -162,29 +161,43 @@ public class LanternLiving extends LanternEntity implements Living {
         final MutableBoundedValue<Integer> foodLevel = getValue(Keys.FOOD_LEVEL).get();
         final MutableBoundedValue<Double> exhaustion = getValue(Keys.EXHAUSTION).get();
 
+        final long currentTime = System.currentTimeMillis();
+
         if (naturalRegeneration && canBeHealed() && saturation.get() > saturation.getMinValue() && foodLevel.get() >= foodLevel.getMaxValue()) {
-            if ((System.currentTimeMillis() - this.lastFoodTime) >= 500) {
+            if ((currentTime - this.lastFoodTime) >= 500) {
                 final double amount = Math.min(saturation.get(), 6.0);
                 heal(amount / 6.0);
                 offer(Keys.EXHAUSTION, Math.min(amount + exhaustion.get(), exhaustion.getMaxValue()));
-                this.lastFoodTime = System.currentTimeMillis();
+                this.lastFoodTime = currentTime;
             }
         } else if (naturalRegeneration && canBeHealed() && foodLevel.get() >= 18) {
-            if ((System.currentTimeMillis() - this.lastFoodTime) >= 4000) {
+            if ((currentTime - this.lastFoodTime) >= 4000) {
                 heal(1.0);
                 offer(Keys.EXHAUSTION, Math.min(6.0 + exhaustion.get(), exhaustion.getMaxValue()));
-                this.lastFoodTime = System.currentTimeMillis();
+                this.lastFoodTime = currentTime;
             }
         } else if (foodLevel.get() <= foodLevel.getMinValue()) {
-            if ((System.currentTimeMillis() - this.lastFoodTime) >= 4000) {
+            if ((currentTime - this.lastFoodTime) >= 4000) {
                 if (get(Keys.HEALTH).get() > 10.0 || getWorld().getDifficulty().equals(Difficulties.HARD)
                         || get(Keys.HEALTH).get() > 1.0 && difficulty.equals(Difficulties.NORMAL)) {
                     damage(1.0, DamageSources.STARVATION);
                 }
-                this.lastFoodTime = System.currentTimeMillis();
+                this.lastFoodTime = currentTime;
             }
         } else {
-            this.lastFoodTime = System.currentTimeMillis();
+            this.lastFoodTime = currentTime;
+        }
+
+        if (difficulty.equals(Difficulties.PEACEFUL) && naturalRegeneration) {
+            if (((currentTime - this.lastPeacefulFoodTime) >= 1000) && get(Keys.HEALTH).orElse(0.0) < get(Keys.MAX_HEALTH).orElse(Double.MAX_VALUE)) {
+                heal(1);
+                this.lastPeacefulFoodTime = currentTime;
+            }
+
+            final int oldFoodLevel = get(Keys.FOOD_LEVEL).orElse(0);
+            if ((((currentTime - this.lastPeacefulFoodTime) / 2) >= 500) && oldFoodLevel < 20) {
+                offer(Keys.FOOD_LEVEL, oldFoodLevel + 1);
+            }
         }
     }
 
