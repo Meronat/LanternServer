@@ -54,6 +54,7 @@ public class LanternLiving extends LanternEntity implements Living {
     private Vector3d headRotation = Vector3d.ZERO;
     private long lastFoodTime = System.currentTimeMillis();
     private long lastPeacefulFoodTime = System.currentTimeMillis();
+    private long lastPeacefulHealthTime = System.currentTimeMillis();
 
     public LanternLiving(UUID uniqueId) {
         super(uniqueId);
@@ -143,7 +144,7 @@ public class LanternLiving extends LanternEntity implements Living {
         }
         final Difficulty difficulty = getWorld().getDifficulty();
 
-        if (get(Keys.EXHAUSTION).get() > 4.0) {
+        if (get(Keys.EXHAUSTION).orElse(0.0) > 4.0) {
             final MutableBoundedValue<Double> saturation = getValue(Keys.SATURATION).get();
 
             if (saturation.get() > saturation.getMinValue()) {
@@ -152,7 +153,7 @@ public class LanternLiving extends LanternEntity implements Living {
                 offer(Keys.FOOD_LEVEL, Math.max(get(Keys.FOOD_LEVEL).get() - 1, getValue(Keys.FOOD_LEVEL).get().getMinValue()));
             }
 
-            offer(Keys.EXHAUSTION, get(Keys.EXHAUSTION).get() - 4.0);
+            offer(Keys.EXHAUSTION, get(Keys.EXHAUSTION).orElse(4.0) - 4.0);
         }
 
         final boolean naturalRegeneration = getWorld().getOrCreateRule(RuleTypes.NATURAL_REGENERATION).getValue();
@@ -178,8 +179,8 @@ public class LanternLiving extends LanternEntity implements Living {
             }
         } else if (foodLevel.get() <= foodLevel.getMinValue()) {
             if ((currentTime - this.lastFoodTime) >= 4000) {
-                if (get(Keys.HEALTH).get() > 10.0 || getWorld().getDifficulty().equals(Difficulties.HARD)
-                        || get(Keys.HEALTH).get() > 1.0 && difficulty.equals(Difficulties.NORMAL)) {
+                if (get(Keys.HEALTH).orElse(20.0) > 10.0 || getWorld().getDifficulty().equals(Difficulties.HARD)
+                        || get(Keys.HEALTH).orElse(20.0) > 1.0 && difficulty.equals(Difficulties.NORMAL)) {
                     damage(1.0, DamageSources.STARVATION);
                 }
                 this.lastFoodTime = currentTime;
@@ -190,15 +191,17 @@ public class LanternLiving extends LanternEntity implements Living {
 
         // Peaceful restoration
         if (difficulty.equals(Difficulties.PEACEFUL) && naturalRegeneration) {
-            if (((currentTime - this.lastPeacefulFoodTime) >= 1000)
+            if (((currentTime - this.lastPeacefulHealthTime) >= 1000)
                     && get(Keys.HEALTH).orElse(0.0) < get(Keys.MAX_HEALTH).orElse(Double.MAX_VALUE)) {
                 heal(1);
-                this.lastPeacefulFoodTime = currentTime;
+                this.lastPeacefulHealthTime = currentTime;
             }
 
             final int oldFoodLevel = get(Keys.FOOD_LEVEL).orElse(0);
-            if ((((currentTime - this.lastPeacefulFoodTime) / 2) >= 500) && oldFoodLevel < 20) {
+            if (((currentTime - this.lastPeacefulFoodTime)) >= 500 || ((((currentTime - this.lastPeacefulFoodTime)) / 2) >= 500)
+                    && oldFoodLevel < get(LanternKeys.MAX_FOOD_LEVEL).orElse(Integer.MAX_VALUE)) {
                 offer(Keys.FOOD_LEVEL, oldFoodLevel + 1);
+                this.lastPeacefulFoodTime = currentTime;
             }
         }
     }
