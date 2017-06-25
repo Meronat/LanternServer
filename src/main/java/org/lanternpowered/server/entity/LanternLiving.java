@@ -31,6 +31,8 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableList;
 import org.lanternpowered.server.data.key.LanternKeys;
 import org.lanternpowered.server.effect.potion.LanternPotionEffectType;
+import org.lanternpowered.server.world.rules.Rule;
+import org.lanternpowered.server.world.rules.RuleTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
 import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
@@ -154,7 +156,7 @@ public class LanternLiving extends LanternEntity implements Living {
             }
         }
 
-        final boolean naturalRegeneration = getWorld().getGameRule(DefaultGameRules.NATURAL_REGENERATION).orElse("true").equals("true");
+        final boolean naturalRegeneration = getWorld().getOrCreateRule(RuleTypes.NATURAL_REGENERATION).getValue();
 
         final MutableBoundedValue<Double> saturation = getValue(Keys.SATURATION).get();
         final MutableBoundedValue<Integer> foodLevel = getValue(Keys.FOOD_LEVEL).get();
@@ -175,8 +177,8 @@ public class LanternLiving extends LanternEntity implements Living {
             }
         } else if (foodLevel.get() <= foodLevel.getMinValue()) {
             if ((System.currentTimeMillis() - this.lastFoodTime) >= 4000) {
-                if (health().get() > 10.0 || getWorld().getDifficulty().equals(Difficulties.HARD) || health().get() > 1.0 && difficulty.equals(
-                        Difficulties.NORMAL)) {
+                if (get(Keys.HEALTH).get() > 10.0 || getWorld().getDifficulty().equals(Difficulties.HARD) || get(Keys.HEALTH).get() > 1.0
+                        && difficulty.equals(Difficulties.NORMAL)) {
                     damage(1.0, DamageSources.STARVATION);
                 }
                 this.lastFoodTime = System.currentTimeMillis();
@@ -195,7 +197,8 @@ public class LanternLiving extends LanternEntity implements Living {
      * @return If this entity can be healed
      */
     public boolean canBeHealed() {
-        return health().get() > health().getMinValue() && health().get() < health().getMaxValue();
+        final MutableBoundedValue<Double> health = health();
+        return health.get() > health.getMinValue() && health.get() < health.getMaxValue();
     }
 
     /**
@@ -207,8 +210,9 @@ public class LanternLiving extends LanternEntity implements Living {
      * @param amount The amount to heal for
      */
     public void heal(double amount) {
-        if (health().get() > health().getMinValue()) {
-            offer(Keys.HEALTH, Math.min(health().get() + amount, health().getMaxValue()));
+        final MutableBoundedValue<Double> health = health();
+        if (health.get() > health.getMinValue()) {
+            offer(Keys.HEALTH, Math.min(health.get() + amount, health.getMaxValue()));
         }
     }
 
