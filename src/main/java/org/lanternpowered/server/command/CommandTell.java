@@ -54,9 +54,9 @@ public final class CommandTell extends CommandProvider {
                     Player player = args.<Player>getOne("player").get();
                     String message = args.<String>getOne("message").get();
                     player.sendMessage(Text.of(TextColors.GRAY, TextStyles.ITALIC,
-                            t("commands.message.display.outgoing", player.getName(), message)));
+                            t("commands.message.display.incoming", player.getName(), message)));
                     src.sendMessage(Text.of(TextColors.GRAY, TextStyles.ITALIC,
-                            t("commands.message.display.incoming", src.getName(), message)));
+                            t("commands.message.display.outgoing", src.getName(), message)));
                     return CommandResult.success();
                 });
     }

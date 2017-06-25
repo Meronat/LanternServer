@@ -139,7 +139,8 @@ public final class CommandSetData extends CommandProvider {
                     final Object data = args.<ValueHolder>getOne("data").get().data;
                     //noinspection unchecked
                     target.offer(key, data);
-                    src.sendMessage(t("Successfully offered the data for the key %s to the player %s", key.getId(), target.getName()));
+                    src.sendMessage(t("Successfully offered the data for the key %s to the player %s with a result of %s", key.getId(),
+                            target.getName(), target.get(key).orElse("")));
                     return CommandResult.success();
                 });
     }

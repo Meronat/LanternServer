@@ -32,6 +32,7 @@ import org.lanternpowered.server.config.user.OpsEntry;
 import org.lanternpowered.server.config.user.UserConfig;
 import org.lanternpowered.server.game.Lantern;
 import org.lanternpowered.server.profile.LanternGameProfile;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -88,10 +89,15 @@ public final class CommandOp extends CommandProvider {
                     }
                     int opLevel = args.<Integer>getOne("level").orElse(Lantern.getGame().getGlobalConfig().getDefaultOpPermissionLevel());
                     Lantern.getGame().getGameProfileManager().get(playerName).whenComplete((profile, error) -> {
+                        if (profile.getName().orElse("").equals(src.getName())) {
+                            src.sendMessage(t("commands.op.failed.self"));
+                            return;
+                        }
                         if (error != null) {
                             src.sendMessage(t("commands.op.failed", playerName));
                         } else {
                             src.sendMessage(t("commands.op.success", playerName));
+                            Sponge.getServer().getPlayer(profile.getUniqueId()).ifPresent(p -> p.sendMessage(t("commands.op.success.receiver")));
                             config.addEntry(new OpsEntry(((LanternGameProfile) profile).withoutProperties(), opLevel));
                         }
                     });

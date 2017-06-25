@@ -81,6 +81,7 @@ public final class DefaultCommandsCollection {
         commandProviders.put(this.implementation, new CommandSetData());
         commandProviders.put(this.minecraft, new CommandSetIdleTimeout());
         commandProviders.put(this.minecraft, new CommandSetSpawn());
+        commandProviders.put(this.implementation, new CommandSpawn());
         commandProviders.put(this.minecraft, new CommandStop());
         commandProviders.put(this.minecraft, new CommandStopSound());
         commandProviders.put(this.minecraft, new CommandTeleport());
