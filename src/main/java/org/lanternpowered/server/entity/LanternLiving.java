@@ -145,15 +145,15 @@ public class LanternLiving extends LanternEntity implements Living {
         final Difficulty difficulty = getWorld().getDifficulty();
 
         if (get(Keys.EXHAUSTION).get() > 4.0) {
-            offer(Keys.EXHAUSTION, get(Keys.EXHAUSTION).get() - 4.0);
-
             final MutableBoundedValue<Double> saturation = getValue(Keys.SATURATION).get();
 
-            if (saturation.get() > saturation.getMaxValue()) {
+            if (saturation.get() > saturation.getMinValue()) {
                 offer(Keys.SATURATION, Math.max(saturation.get() - 1.0, saturation.getMinValue()));
             } else if (!difficulty.equals(Difficulties.PEACEFUL)) {
                 offer(Keys.FOOD_LEVEL, Math.max(get(Keys.FOOD_LEVEL).get() - 1, getValue(Keys.FOOD_LEVEL).get().getMinValue()));
             }
+
+            offer(Keys.EXHAUSTION, get(Keys.EXHAUSTION).get() - 4.0);
         }
 
         final boolean naturalRegeneration = getWorld().getOrCreateRule(RuleTypes.NATURAL_REGENERATION).getValue();
@@ -169,7 +169,7 @@ public class LanternLiving extends LanternEntity implements Living {
                 offer(Keys.EXHAUSTION, Math.min(amount + exhaustion.get(), exhaustion.getMaxValue()));
                 this.lastFoodTime = System.currentTimeMillis();
             }
-        } else if (naturalRegeneration && canBeHealed() && foodLevel.get() > 18) {
+        } else if (naturalRegeneration && canBeHealed() && foodLevel.get() >= 18) {
             if ((System.currentTimeMillis() - this.lastFoodTime) >= 4000) {
                 heal(1.0);
                 offer(Keys.EXHAUSTION, Math.min(6.0 + exhaustion.get(), exhaustion.getMaxValue()));
@@ -177,8 +177,8 @@ public class LanternLiving extends LanternEntity implements Living {
             }
         } else if (foodLevel.get() <= foodLevel.getMinValue()) {
             if ((System.currentTimeMillis() - this.lastFoodTime) >= 4000) {
-                if (get(Keys.HEALTH).get() > 10.0 || getWorld().getDifficulty().equals(Difficulties.HARD) || get(Keys.HEALTH).get() > 1.0
-                        && difficulty.equals(Difficulties.NORMAL)) {
+                if (get(Keys.HEALTH).get() > 10.0 || getWorld().getDifficulty().equals(Difficulties.HARD)
+                        || get(Keys.HEALTH).get() > 1.0 && difficulty.equals(Difficulties.NORMAL)) {
                     damage(1.0, DamageSources.STARVATION);
                 }
                 this.lastFoodTime = System.currentTimeMillis();
