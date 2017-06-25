@@ -71,7 +71,6 @@ public class LanternLiving extends LanternEntity implements Living {
         registerKey(LanternKeys.MAX_SATURATION, 40.0, 0.0, Double.MAX_VALUE);
         registerKey(Keys.SATURATION, 5.0, 0.0, LanternKeys.MAX_SATURATION);
         registerKey(Keys.EXHAUSTION, 0.0, 0.0, 40.0);
-        registerKey(Keys.FOOD_LEVEL, 20, 0, LanternKeys.MAX_FOOD_LEVEL);
     }
 
     protected void setRawHeadRotation(Vector3d rotation) {
