@@ -307,7 +307,8 @@ public class LanternPlayer extends LanternHumanoid implements AbstractSubject, P
         registerKey(Keys.FOOD_LEVEL, 20, 0, LanternKeys.MAX_FOOD_LEVEL);
         registerKey(LanternKeys.MAX_SATURATION, 40.0, 0.0, Double.MAX_VALUE);
         registerKey(Keys.SATURATION, 5.0, 0.0, LanternKeys.MAX_SATURATION);
-        registerKey(Keys.EXHAUSTION, 0.0, 0.0, 40.0);
+        registerKey(LanternKeys.MAX_EXHAUSTION, 40.0, 0.0, Double.MAX_VALUE);
+        registerKey(Keys.EXHAUSTION, 0.0, 0.0, LanternKeys.MAX_EXHAUSTION);
         registerKey(Keys.LAST_DATE_PLAYED, null);
         registerKey(Keys.FIRST_DATE_PLAYED, null);
         registerKey(Keys.IS_FLYING, false).notRemovable();
