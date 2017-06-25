@@ -409,7 +409,7 @@ public interface AbstractValueContainer<C extends ValueContainer<C>, H extends V
                     element = minimum;
                 } else {
                     final E maximum = maximumSupplier.get();
-                    if (element.compareTo(minimum) > 0) {
+                    if (element.compareTo(maximum) > 0) {
                         registration.set(maximum);
                         element = maximum;
                     }
@@ -426,7 +426,7 @@ public interface AbstractValueContainer<C extends ValueContainer<C>, H extends V
                 if (element.compareTo(minimum) < 0) {
                     registration.set(minimum);
                     element = minimum;
-                } else if (element.compareTo(minimum) > 0) {
+                } else if (element.compareTo(maximum) > 0) {
                     registration.set(maximum);
                     element = maximum;
                 }
