@@ -45,7 +45,7 @@ import java.util.Arrays;
 
 public final class LanternServerLaunch {
 
-    public static void main(String[] args) {
+    public void main(String[] args) {
         // Get the default logger
         final Logger logger = LoggerFactory.getLogger(InternalPluginsInfo.Implementation.NAME);
         try {

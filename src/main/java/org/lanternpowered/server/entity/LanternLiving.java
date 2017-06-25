@@ -66,11 +66,6 @@ public class LanternLiving extends LanternEntity implements Living {
         registerKey(Keys.MAX_HEALTH, 20.0, 0.0, 1024.0);
         registerKey(Keys.HEALTH, 20.0, 0.0, Keys.MAX_HEALTH);
         registerKey(Keys.POTION_EFFECTS, new ArrayList<>());
-        registerKey(LanternKeys.MAX_FOOD_LEVEL, 20, 0, Integer.MAX_VALUE);
-        registerKey(Keys.FOOD_LEVEL, 20, 0, LanternKeys.MAX_FOOD_LEVEL);
-        registerKey(LanternKeys.MAX_SATURATION, 40.0, 0.0, Double.MAX_VALUE);
-        registerKey(Keys.SATURATION, 5.0, 0.0, LanternKeys.MAX_SATURATION);
-        registerKey(Keys.EXHAUSTION, 0.0, 0.0, 40.0);
     }
 
     protected void setRawHeadRotation(Vector3d rotation) {
@@ -111,9 +106,9 @@ public class LanternLiving extends LanternEntity implements Living {
     }
 
     private void pulsePotions() {
+        // TODO: Move potion effects to a component? + The key registration
         final List<PotionEffect> potionEffects = get(Keys.POTION_EFFECTS).get();
         if (!potionEffects.isEmpty()) {
-            // TODO: Move potion effects to a component? + The key registration
             final PotionEffect.Builder builder = PotionEffect.builder();
             final ImmutableList.Builder<PotionEffect> newPotionEffects = ImmutableList.builder();
             for (PotionEffect potionEffect : potionEffects) {
@@ -132,9 +127,9 @@ public class LanternLiving extends LanternEntity implements Living {
                 if (potionEffect.getType() == PotionEffectTypes.INVISIBILITY) {
                     offer(Keys.INVISIBLE, duration > 0);
                 }
-                if (potionEffect.getType() == PotionEffectTypes.HUNGER && get(FoodData.class).isPresent()) {
-                    MutableBoundedValue<Double> exhaustion = get(FoodData.class).get().exhaustion();
-                    offer(Keys.EXHAUSTION, Math.min(exhaustion.get() + (0.005 * (potionEffect.getAmplifier() + 1)), exhaustion.getMaxValue()));
+                if (potionEffect.getType() == PotionEffectTypes.HUNGER && supports(Keys.EXHAUSTION)) {
+                    offer(Keys.EXHAUSTION, Math.min(get(Keys.EXHAUSTION).get() + (0.005 * (potionEffect.getAmplifier() + 1)),
+                            getValue(Keys.EXHAUSTION).get().getMaxValue()));
                 }
             }
             offer(Keys.POTION_EFFECTS, newPotionEffects.build());
@@ -155,8 +150,7 @@ public class LanternLiving extends LanternEntity implements Living {
             if (saturation.get() > saturation.getMaxValue()) {
                 offer(Keys.SATURATION, Math.max(saturation.get() - 1.0, saturation.getMinValue()));
             } else if (!difficulty.equals(Difficulties.PEACEFUL)) {
-                final MutableBoundedValue<Integer> foodLevel = getValue(Keys.FOOD_LEVEL).get();
-                offer(Keys.FOOD_LEVEL, Math.max(foodLevel.get() - 1, foodLevel.getMinValue()));
+                offer(Keys.FOOD_LEVEL, Math.max(get(Keys.FOOD_LEVEL).get() - 1, getValue(Keys.FOOD_LEVEL).get().getMinValue()));
             }
         }
 
