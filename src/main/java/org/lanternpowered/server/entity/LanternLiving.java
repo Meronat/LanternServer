@@ -188,8 +188,10 @@ public class LanternLiving extends LanternEntity implements Living {
             this.lastFoodTime = currentTime;
         }
 
+        // Peaceful restoration
         if (difficulty.equals(Difficulties.PEACEFUL) && naturalRegeneration) {
-            if (((currentTime - this.lastPeacefulFoodTime) >= 1000) && get(Keys.HEALTH).orElse(0.0) < get(Keys.MAX_HEALTH).orElse(Double.MAX_VALUE)) {
+            if (((currentTime - this.lastPeacefulFoodTime) >= 1000)
+                    && get(Keys.HEALTH).orElse(0.0) < get(Keys.MAX_HEALTH).orElse(Double.MAX_VALUE)) {
                 heal(1);
                 this.lastPeacefulFoodTime = currentTime;
             }
