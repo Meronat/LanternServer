@@ -52,6 +52,7 @@ import org.lanternpowered.server.network.vanilla.message.type.play.MessagePlayOu
 import org.lanternpowered.server.network.vanilla.message.type.play.MessagePlayOutEntityLook;
 import org.lanternpowered.server.network.vanilla.message.type.play.MessagePlayOutEntityMetadata;
 import org.lanternpowered.server.network.vanilla.message.type.play.MessagePlayOutPlayerAbilities;
+import org.lanternpowered.server.network.vanilla.message.type.play.MessagePlayOutPlayerHealthUpdate;
 import org.lanternpowered.server.network.vanilla.message.type.play.MessagePlayOutSetCamera;
 import org.lanternpowered.server.network.vanilla.message.type.play.MessagePlayOutSetEntityPassengers;
 import org.lanternpowered.server.network.vanilla.message.type.play.MessagePlayOutSetGameMode;
@@ -289,6 +290,8 @@ public class PlayerEntityProtocol extends HumanoidEntityProtocol<LanternPlayer> 
             this.lastCanFly = canFly;
             this.lastFlySpeed = flySpeed;
         }
+        context.sendToSelf(() -> new MessagePlayOutPlayerHealthUpdate(this.entity.health().get().floatValue(),
+                this.entity.foodLevel().get().floatValue(), this.entity.saturation().get().floatValue()));
         super.update(context);
         final TopHat topHat = getTopHat();
         if (topHat != this.lastTopHat) {
