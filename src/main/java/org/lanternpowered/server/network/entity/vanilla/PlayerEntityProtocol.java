@@ -28,13 +28,11 @@ package org.lanternpowered.server.network.entity.vanilla;
 import static org.lanternpowered.server.network.entity.EntityProtocolManager.INVALID_ENTITY_ID;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.lanternpowered.server.data.key.LanternKeys;
 import org.lanternpowered.server.entity.event.EntityEvent;
 import org.lanternpowered.server.entity.event.RefreshAbilitiesPlayerEvent;
 import org.lanternpowered.server.entity.event.SpectateEntityEvent;
-import org.lanternpowered.server.entity.event.SwingHandEntityEvent;
 import org.lanternpowered.server.entity.living.player.LanternPlayer;
 import org.lanternpowered.server.entity.living.player.gamemode.LanternGameMode;
 import org.lanternpowered.server.extra.accessory.TopHat;
@@ -89,6 +87,10 @@ public class PlayerEntityProtocol extends HumanoidEntityProtocol<LanternPlayer> 
     private byte lastYaw0;
     private byte lastPitch0;
     private byte lastFlags0;
+
+    private float lastHealth;
+    private int lastFoodLevel;
+    private boolean lastHungry = true;
 
     public PlayerEntityProtocol(LanternPlayer entity) {
         super(entity);
@@ -290,8 +292,15 @@ public class PlayerEntityProtocol extends HumanoidEntityProtocol<LanternPlayer> 
             this.lastCanFly = canFly;
             this.lastFlySpeed = flySpeed;
         }
-        context.sendToSelf(() -> new MessagePlayOutPlayerHealthUpdate(this.entity.health().get().floatValue(),
-                this.entity.foodLevel().get().floatValue(), this.entity.saturation().get().floatValue()));
+        final float health = this.entity.get(Keys.HEALTH).get().floatValue();
+        final int foodLevel = this.entity.get(Keys.FOOD_LEVEL).get();
+        final float saturation = this.entity.get(Keys.SATURATION).get().floatValue();
+        if (health != this.lastHealth || foodLevel != this.lastFoodLevel || saturation == 0f != this.lastHungry) {
+            context.sendToSelf(() -> new MessagePlayOutPlayerHealthUpdate(health, foodLevel, saturation));
+            this.lastHealth = health;
+            this.lastFoodLevel = foodLevel;
+            this.lastHungry = saturation == 0f;
+        }
         super.update(context);
         final TopHat topHat = getTopHat();
         if (topHat != this.lastTopHat) {
